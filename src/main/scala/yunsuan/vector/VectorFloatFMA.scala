@@ -107,6 +107,8 @@ class VectorFloatFMA() extends Module{
   val sign_a_b_f16_2          = (fp_a_f16_2.head(1) ^ fp_b_f16_2.head(1)).asBool
   val sign_a_b_f16_3          = (fp_a_f16_3.head(1) ^ fp_b_f16_3.head(1)).asBool
   val widen_a_is_sign_inv     = is_vfnmacc || is_vfnmsac
+  // uop_idx = 0 -> widen_16 = (15, 0) (31, 16)
+  // uop_idx = 1 -> widen_32 = (47, 32) (63, 48)
   val widen_a_f16_0           = sign_inv(Mux(io.uop_idx,io.widen_a(47,32),io.widen_a(15,0)),widen_a_is_sign_inv)
   val widen_b_f16_0           = Mux(io.is_frs1,io.frs1(15,0),Mux(io.uop_idx,io.widen_b(47,32),io.widen_b(15,0)))
   val widen_a_f16_1           = sign_inv(Mux(io.uop_idx,io.widen_a(63,48),io.widen_a(31,16)),widen_a_is_sign_inv)

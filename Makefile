@@ -84,5 +84,5 @@ test:
 	mill YunSuan.test.test
 
 unit-test:
-	make emu
-	./build/emu -O 100000
+	make emu EMU_TRACE=1
+	./build/emu -O 4 --dump-wave -b 0 -e 10000

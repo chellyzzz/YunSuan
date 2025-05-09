@@ -47,6 +47,26 @@ void fp16_print(uint64_t *src, uint64_t vlen, uint64_t xlen){
     }
 }
 
+void fp32_print(uint64_t *src, uint64_t vlen, uint64_t xlen){
+    if (src == NULL) {
+        printf("Error: Null pointer passed to fp32_print\n");
+        return;
+    }
+
+    for (int j = vlen / xlen - 1; j >= 0; j--) {
+        for (int k = xlen / 32 - 1; k >= 0; k--) {
+            // 取出 32-bit，转为 float 打印
+            uint32_t bits = (src[j] >> (32 * k)) & 0xffffffff;
+            float val;
+            memcpy(&val, &bits, sizeof(float)); // 用 memcpy 保险地转位
+            printf("%12.4f ", val);
+        }
+        if (j % 4 == 0) {
+            printf("\n");
+        }
+    }
+}
+
 void uint64_print(uint64_t *src, uint64_t vlen, uint64_t xlen){
     if (src == NULL) {
         printf("Error: Null pointer passed to fp16_print\n");
@@ -66,6 +86,36 @@ void int8_print(uint64_t *src, uint64_t vlen, uint64_t xlen){
     for (int j = vlen/xlen -1; j >= 0; j--){
         for(int k = xlen/8 - 1; k >= 0; k--){
             printf("%6d", (int8_t)((src[j] >> 8*k) & 0xff));
+        }
+        if(j%4 == 0){
+            printf("\n");
+        }
+    }
+}
+
+void int16_print(uint64_t *src, uint64_t vlen, uint64_t xlen){
+    if (src == NULL) {
+        printf("Error: Null pointer passed to fp16_print\n");
+        return;
+    }
+    for (int j = vlen/xlen -1; j >= 0; j--){
+        for(int k = xlen/16 - 1; k >= 0; k--){
+            printf("%10d", (int16_t)((src[j] >> 16*k) & 0xffff));
+        }
+        if(j%4 == 0){
+            printf("\n");
+        }
+    }
+}
+
+void int32_print(uint64_t *src, uint64_t vlen, uint64_t xlen){
+    if (src == NULL) {
+        printf("Error: Null pointer passed to fp16_print\n");
+        return;
+    }
+    for (int j = vlen/xlen -1; j >= 0; j--){
+        for(int k = xlen/32 - 1; k >= 0; k--){
+            printf("%12d", (int32_t)((src[j] >> 32*k) & 0xffffffff));
         }
         if(j%4 == 0){
             printf("\n");

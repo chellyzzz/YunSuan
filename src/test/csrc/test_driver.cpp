@@ -38,9 +38,9 @@ void TestDriver::set_test_type() {
   // test_type.pick_fuType = false;
   // test_type.pick_fuOpType = false;
   test_type.pick_fuType = true;
-  test_type.pick_fuOpType = false;
-  test_type.fuType =  VIntegerALU;
-  test_type.fuOpType = VFNCVT_XFW;
+  test_type.pick_fuOpType = true;
+  test_type.fuType =  VFloatFMA;
+  test_type.fuOpType = VFMUL;
   printf("Set Test Type Res: fuType:%d fuOpType:%d\n", test_type.fuType, test_type.fuOpType);
 }
 
@@ -50,9 +50,9 @@ void TestDriver::gen_next_test_case() {
   if (verbose) { display_ref_input(); }
   get_expected_output();
   if (verbose) { display_ref_output(); }
-  // printf("\n-----new sample-----\n");
-  // display();
-  // printf("--------------------\n");
+  printf("\n-----new sample-----\n");
+  display();
+  printf("--------------------\n");
 }
 
 
@@ -149,6 +149,7 @@ uint8_t TestDriver::gen_random_optype() {
 uint8_t TestDriver::gen_random_sew() {
   switch (input.fuType)
   {
+    case VFloatFMA: return 2;
     case VIntegerALU: return 0;
     case VIntegerALUV2: return 0;
     case VIntegerDivider : return 0;  
@@ -177,7 +178,8 @@ bool TestDriver::gen_random_widen() {
       }
       case VFloatFMA: {
         if(input.fuOpType==VFMUL || input.fuOpType==VFMACC || input.fuOpType==VFNMACC || input.fuOpType==VFMSAC || input.fuOpType==VFNMSAC) 
-          return rand()%2 == 1;
+          // return rand()%2 == 1;
+          return true;
         else return false;
         break;
       }
@@ -325,6 +327,7 @@ void TestDriver::gen_random_uopidx() {
       break;
     }
     case VFloatAdder: input.uop_idx = input.widen ? rand() % 2 : 0; break;
+    case VFloatFMA: input.uop_idx = input.widen ? 1 : 0; break;
     default: input.uop_idx = 0;
   }
 }
@@ -785,6 +788,14 @@ void TestDriver::display_ref_input() {
       // int8_print(input.src4, VLEN, XLEN);
     }
   }
+  else if(input.sew == 2){
+    if(input.widen){
+      printf("src1: \n");
+      fp16_print(input.src1, VLEN, XLEN);
+      printf("src2: \n");
+      fp16_print(input.src2, VLEN, XLEN);
+    }
+  }
   else if(input.sew == 1){
     printf("src1: \n");
     fp16_print(input.src1, VLEN, XLEN);
@@ -829,6 +840,13 @@ void TestDriver::display_ref_output() {
       printf("  fflags: %x_%x_%x_%x  vxsat: %lx\n", expect_output.fflags[3], expect_output.fflags[2], expect_output.fflags[1], expect_output.fflags[0], expect_output.vxsat);
     }
   }
+  else if(input.sew == 2){
+    if(input.widen){
+      printf("res : \n");
+      fp32_print(expect_output.result, VLEN, XLEN);
+      printf("  fflags: %x_%x_%x_%x  vxsat: %lx\n", expect_output.fflags[3], expect_output.fflags[2], expect_output.fflags[1], expect_output.fflags[0], expect_output.vxsat);
+    }
+  }
   else if(input.sew == 1){
     printf("res : \n");
     fp16_print(expect_output.result, VLEN, XLEN);
@@ -855,6 +873,13 @@ void TestDriver::display_dut() {
     else if(input.fuOpType == VFWCVT_FXV){
       printf("res : \n");
       fp16_print(dut_output.result, VLEN, XLEN);
+      printf("  fflags: %x_%x_%x_%x  vxsat: %lx\n", dut_output.fflags[3], dut_output.fflags[2], dut_output.fflags[1], dut_output.fflags[0], dut_output.vxsat);
+    }
+  }
+  else if(input.sew == 2){
+    if(input.widen){
+      printf("res : \n");
+      fp32_print(dut_output.result, VLEN, XLEN);
       printf("  fflags: %x_%x_%x_%x  vxsat: %lx\n", dut_output.fflags[3], dut_output.fflags[2], dut_output.fflags[1], dut_output.fflags[0], dut_output.vxsat);
     }
   }
