@@ -85,4 +85,4 @@ test:
 
 unit-test:
 	make emu EMU_TRACE=1
-	./build/emu -O 4 --dump-wave -b 0 -e 10000
+	./build/emu -O 12 --dump-wave -b 0 -e 10000

@@ -39,8 +39,8 @@ void TestDriver::set_test_type() {
   // test_type.pick_fuOpType = false;
   test_type.pick_fuType = true;
   test_type.pick_fuOpType = true;
-  test_type.fuType =  VFloatFMA;
-  test_type.fuOpType = VFMUL;
+  test_type.fuType =  VFloatCvt;
+  test_type.fuOpType = VFWCVT_XFV;
   printf("Set Test Type Res: fuType:%d fuOpType:%d\n", test_type.fuType, test_type.fuOpType);
 }
 
@@ -160,7 +160,7 @@ uint8_t TestDriver::gen_random_sew() {
       else if(input.fuOpType == VFWCVT_FXV){
         return 0;
       }
-      else return 1;
+      else return 2;
     }
     default: return 1;
   }
